@@ -1,26 +1,23 @@
 # Задание 2.1
 
-
-/*  data "yandex_compute_image" "ubuntu" {
-  family = "ubuntu-2004-lts"
-}
-*/
 resource "yandex_compute_instance" "count" {
-  count = 5
+  count = 3
   name        = "web-${count.index+1}"
-  platform_id = "standard-v1"
-  resources {
-    cores         = 2
-    memory        = 1
-    core_fraction = 5
+  zone = var.zone
+  platform_id = var.platform_id
+   resources {
+    cores         = var.resources["cpu"]
+    memory        = var.resources["ram"]
+    core_fraction = var.resources["core_fraction"]
   }
+
   boot_disk {
     initialize_params {
-      image_id = "fd8nru7hnggqhs9mkqps"
+      image_id = var.image_id
     }
   }
   scheduling_policy {
-    preemptible = true
+    preemptible = var.scheduling_policy
   }
   
   network_interface {

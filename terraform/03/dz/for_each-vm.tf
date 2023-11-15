@@ -1,31 +1,4 @@
-# Задание 2.2.
 
-
-variable "wm_resources" {
-  type        = list(object({ vm_name=string, cpu=number, ram=number, disk=number, core_fraction=number}))
-  default     = [
-    {vm_name="main", 
-     cpu=2, 
-     ram=2, 
-     disk=1
-     core_fraction=5
-},
-    {vm_name="replica", 
-     cpu=2, 
-     ram=2, 
-     disk=1
-     core_fraction=5
-  }
-/*,
-    {vm_name="web", 
-     cpu=2, 
-     ram=2, 
-     disk=1
-     core_fraction=5
-  },
-*/
-]
-}
 # Задание 2.4
 locals {
   ssh-keys = file("~/.ssh/id_rsa.pub")
@@ -37,8 +10,8 @@ resource "yandex_compute_instance" "for_each" {
   depends_on = [yandex_compute_instance.count]
 
   for_each = {for env in var.wm_resources : env.vm_name => env}
-  platform_id = "standard-v1"
   name = each.value.vm_name
+  allow_stopping_for_update = true
   
   resources {
     cores         = each.value.cpu
@@ -47,7 +20,7 @@ resource "yandex_compute_instance" "for_each" {
 }     
   boot_disk {
     initialize_params {
-      image_id = "fd8nru7hnggqhs9mkqps"
+      image_id = var.image_id
     }
   }
 
